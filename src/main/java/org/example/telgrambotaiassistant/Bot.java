@@ -2,25 +2,38 @@ package org.example.telgrambotaiassistant;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-@Component
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Bot extends TelegramLongPollingBot {
     String nameBot;
 
-    public Bot(@Value(value = "${token_bot}") String botToken,
-               @Value(value = "${name_bot}") String nameBot) {
+    public Bot(String botToken, String nameBot) {
         super(botToken);
         this.nameBot = nameBot;
     }
 
+    public void sendText(Long id, String msg) {
+        SendMessage sendMessage = SendMessage
+                .builder()
+                .chatId(id)
+                .text(msg)
+                .build();
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
-        System.out.println(update.getMessage().getText());
+        String sendMsg = update.getMessage().getText();
+        Long id = update.getMessage().getChatId();
+        this.sendText(id, sendMsg);
     }
 
     @Override
