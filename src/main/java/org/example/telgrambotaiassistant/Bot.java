@@ -1,39 +1,44 @@
 package org.example.telgrambotaiassistant;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.example.telgrambotaiassistant.handler.UpdateHandler;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Slf4j
+@Component
 public class Bot extends TelegramLongPollingBot {
-    String nameBot;
 
-    public Bot(String botToken, String nameBot) {
-        super(botToken);
+    private final String nameBot;
+    private final UpdateHandler updateHandler;
+
+    public Bot(
+            @Value("${token_bot}") String botToken,
+            @Value("${name_bot}") String nameBot,
+            @Lazy UpdateHandler updateHandler
+    ) {
+        super(telegramOptions(), botToken);
         this.nameBot = nameBot;
+        this.updateHandler = updateHandler;
     }
 
-    public void sendText(Long id, String msg) {
-        SendMessage sendMessage = SendMessage
-                .builder()
-                .chatId(id)
-                .text(msg)
-                .build();
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
-        }
+    private static DefaultBotOptions telegramOptions() {
+        DefaultBotOptions options = new DefaultBotOptions();
+        options.setProxyType(DefaultBotOptions.ProxyType.NO_PROXY);
+        return options;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-        String sendMsg = update.getMessage().getText();
-        Long id = update.getMessage().getChatId();
-        this.sendText(id, sendMsg);
+        try {
+            updateHandler.handle(update);
+        } catch (Exception ex) {
+            log.error("Ошибка обработки update", ex);
+        }
     }
 
     @Override

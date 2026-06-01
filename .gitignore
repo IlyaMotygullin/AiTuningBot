@@ -30,6 +30,7 @@ mvnw.cmd
 Thumbs.db
 
 # Секреты (токены бота - критично!)
+application.yaml
 application.properties
 *.properties
 *.secret

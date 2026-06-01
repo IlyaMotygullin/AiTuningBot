@@ -1,0 +1,5 @@
+token_bot: YOUR_TELEGRAM_BOT_TOKEN
+name_bot: your_bot_username
+
+server:
+  port: 8080
