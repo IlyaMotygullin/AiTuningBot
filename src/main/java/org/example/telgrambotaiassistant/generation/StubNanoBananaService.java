@@ -1,9 +1,11 @@
 package org.example.telgrambotaiassistant.generation;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
-/** Заглушка генерации: возвращает фото авто. */
+/** Заглушка генерации (когда bot.ai.enabled=false). */
 @Service
+@ConditionalOnProperty(prefix = "bot.ai", name = "enabled", havingValue = "false", matchIfMissing = true)
 public class StubNanoBananaService implements NanoBananaService {
 
     @Override
