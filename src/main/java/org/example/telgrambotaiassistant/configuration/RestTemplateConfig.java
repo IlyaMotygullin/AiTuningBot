@@ -20,4 +20,5 @@ public class RestTemplateConfig {
                 .readTimeout(Duration.ofSeconds(30))
                 .build();
     }
+    //гав гав
 }
