@@ -1,22 +1,30 @@
 package org.example.telgrambotaiassistant.config;
 
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.telgrambotaiassistant.bot.Bot;
+import org.example.telgrambotaiassistant.service.BotFlowService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@EnableConfigurationProperties(BotProperties.class)
 public class BotConfig {
-    @Value(value = "${name_bot}")
-    String nameBot;
-    @Value(value = "${token_bot}")
-    String tokenBot;
 
-    @Bean(value = "botBean")
-    public Bot bot() {
-        return new Bot(tokenBot, nameBot);
+    @Value("${token_bot}")
+    private String tokenBot;
+
+    @Value("${name_bot}")
+    private String nameBot;
+
+    @Bean(name = "botBean")
+    public Bot bot(BotFlowService botFlowService) {
+        return new Bot(tokenBot, nameBot, botFlowService);
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 }

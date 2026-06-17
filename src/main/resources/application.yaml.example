@@ -1,0 +1,13 @@
+token_bot: YOUR_TELEGRAM_BOT_TOKEN
+name_bot: your_bot_username
+
+server:
+  port: 8080
+
+bot:
+  ai:
+    enabled: true
+    api-key: YOUR_PROXYAPI_KEY
+    base-url: https://api.proxyapi.ru/google
+    validation-model: gemini-2.5-flash
+    generation-model: gemini-2.5-flash-image

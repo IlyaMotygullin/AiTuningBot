@@ -1,24 +1,23 @@
 package org.example.telgrambotaiassistant.config;
 
-
-
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.Proxy;
 import java.time.Duration;
 
 @Configuration
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RestTemplateConfiguration {
-    @Bean(value = "restTemplateTelegramApi")
-    public RestTemplate restTemplate(RestTemplateBuilder builder) {
-        return builder
-                .connectTimeout(Duration.ofSeconds(100))
-                .readTimeout(Duration.ofSeconds(50))
-                .build();
+
+    @Bean(name = "restTemplateTelegramApi")
+    public RestTemplate restTemplateTelegramApi(RestTemplateBuilder builder) {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setProxy(Proxy.NO_PROXY);
+        factory.setConnectTimeout((int) Duration.ofSeconds(30).toMillis());
+        factory.setReadTimeout((int) Duration.ofSeconds(60).toMillis());
+        return builder.requestFactory(() -> factory).build();
     }
 }
